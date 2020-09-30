@@ -15,3 +15,4 @@ AlignTrailingComments: true
 AllowShortFunctionsOnASingleLine: None
 AllowShortLoopsOnASingleLine: true
 BreakBeforeBraces: Attach
+AllowShortCaseLabelsOnASingleLine: true
