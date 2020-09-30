@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #define DEBUG_MODE		   /* empty */
-#define KW(str, tokentype) {#str, TokenType::tokentype},
 
 typedef double tl_Number;
 
@@ -49,12 +48,15 @@ const std::string TokenNames[TokenType::NUM_TOKENS] = {
 // clang-format on
 
 const static std::unordered_map<std::string, TokenType> keywords = {
+#define KW(str, tokentype) {#str, TokenType::tokentype},
+
 	// clang-format off
     KW(true , TRUE )
     KW(false, FALSE)
     KW(let  , LET  )
     KW(nil  , NIL  )
 	// clang-format on
+#undef KW
 };
 
 struct Location {
