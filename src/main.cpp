@@ -2,17 +2,16 @@
 #include <cassert>
 #include <cctype>
 #include <cstring>
-#include <ctype.h>
 #include <iostream>
 #include <stdint.h>
-#include <str_enum.hpp>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utils/str_enum.hpp>
+#include <utils/str_format.hpp>
 
-#define DEBUG_MODE /* empty */
-
-using tl_Number = double;
+namespace tl {
+using number_t = double;
 
 STR_ENUM(TokenType,
 		 plus,	 // +
@@ -142,7 +141,6 @@ class Lexer {
 
 	// helper functions:
 
-	// somewhat expensive, optimize later.
 	bool isKeyword(const Token& token) const {
 		return (keywords.find(token.raw(source)) != keywords.end());
 	}
@@ -212,13 +210,15 @@ void lexerTest() {
 
 	for (int i = 0; i < expectedCount; i++) {
 		Token token = lexer.nextToken();
-		std::cout << "TOKEN_" << token << std::endl;
+		print("Token: {}\n", token);
 		assert(token.type == expected[i]);
 	}
 }
+} // namespace tl
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char const* argv[]) {
-	std::cout << "--Toylang--\n" << std::endl;
+	using namespace tl;
+	print("--Toylang--\n\n");
 	assert(utils::toStr(TokenType::div) == "div");
 	assert(utils::toEnum("plus", TokenType::error) == TokenType::plus);
 	lexerTest();
