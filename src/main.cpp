@@ -86,7 +86,7 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
 
 class Lexer {
   private:
-	struct {
+	struct SourcePosition {
 		std::size_t current = 0;
 		std::size_t start = 0;
 		std::size_t line = 1;
