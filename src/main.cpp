@@ -1,3 +1,4 @@
+#include <array>
 #include <cassert>
 #include <cctype>
 #include <cstring>
@@ -8,29 +9,31 @@
 #include <string_view>
 #include <unordered_map>
 
-#define DEBUG_MODE		   /* empty */
+#define DEBUG_MODE /* empty */
 
 using tl_Number = double;
 
-enum TokenType {
-	PLUS,	// +
-	MINUS,	// -
-	MULT,	// *
-	DIV,	// /
-	MOD,	// %
-	NUM,	// [0-9]+(.[0-9]+)?
-	STRING, // '[^']' | "[^"]"
-	TRUE,	// true
-	FALSE,	// false
-	LET,	// let
-	NIL,	// nil
-	_EOF,	// '/0'
-	ERROR,	// unknown
-	NUM_TOKENS
+enum class TokenType {
+	plus,	// +
+	minus,	// -
+	mult,	// *
+	div,	// /
+	mod,	// %
+	num,	// [0-9]+(.[0-9]+)?
+	string, // '[^']' | "[^"]"
+	true_,	// true
+	false_, // false
+	let,	// let
+	nil,	// nil
+	eof_,	// '/0'
+	error,	// unknown
+	eCOUNT_
 };
 
+using TT = TokenType;
+
 // clang-format off
-const std::string TokenNames[TokenType::NUM_TOKENS] = {
+static constexpr std::array<std::string_view, (std::size_t)TT::eCOUNT_> tokenNames = {
 	"PLUS",	
 	"MINUS",	
 	"MULT",	
@@ -48,15 +51,12 @@ const std::string TokenNames[TokenType::NUM_TOKENS] = {
 // clang-format on
 
 const static std::unordered_map<std::string, TokenType> keywords = {
-#define KW(str, tokentype) {#str, TokenType::tokentype},
-
 	// clang-format off
-    KW(true , TRUE )
-    KW(false, FALSE)
-    KW(let  , LET  )
-    KW(nil  , NIL  )
+	{"nil"  , TT::nil   },
+	{"let"  , TT::let   },
+	{"true" , TT::true_ },
+	{"false", TT::false_},
 	// clang-format on
-#undef KW
 };
 
 struct Location {
@@ -71,7 +71,7 @@ struct Location {
 };
 
 struct Token {
-	TokenType type	   = TokenType::ERROR;
+	TokenType type	   = TT::error;
 	Location  location = {};
 
 	std::string_view raw(std::string& source) {
@@ -80,12 +80,12 @@ struct Token {
 };
 
 std::ostream& operator<<(std::ostream& os, const Token& token) {
-	return os << TokenNames[(int)(token.type)];
+	return os << tokenNames[(std::size_t)(token.type)];
 }
 
 class Lexer {
   private:
-	std::string fileName;
+	std::string	  fileName;
 	std::string	  source;
 	std::size_t	  currentPos = 0;
 	std::size_t	  startPos	 = 0;
@@ -103,21 +103,21 @@ class Lexer {
 		startPos = currentPos;
 
 		if (eof())
-			return makeToken(TokenType::_EOF);
+			return makeToken(TT::eof_);
 		char c = advance();
 
 		// clang-format off
 		switch (c) {
-			case '+': return makeToken(TokenType::PLUS );
-			case '-': return makeToken(TokenType::MINUS);
-			case '*': return makeToken(TokenType::MULT );
-			case '/': return makeToken(TokenType::DIV  );
-			case '%': return makeToken(TokenType::MOD  );
+			case '+': return makeToken(TT::plus );
+			case '-': return makeToken(TT::minus);
+			case '*': return makeToken(TT::mult );
+			case '/': return makeToken(TT::div  );
+			case '%': return makeToken(TT::mod  );
 			default:  
 			if (isdigit(c)) return number();
 		}
 		// clang-format on
-		return makeToken(TokenType::ERROR);
+		return makeToken(TT::error);
 	}
 
   private:
@@ -133,7 +133,7 @@ class Lexer {
 			}
 		}
 
-		return makeToken(TokenType::NUM);
+		return makeToken(TT::num);
 	}
 
 	// helper functions:
@@ -205,8 +205,8 @@ void LexerTest() {
 	const int expectedCount = 8;
 
 	TokenType expected[expectedCount] = {
-		TokenType::NUM, TokenType::PLUS, TokenType::NUM, TokenType::MINUS,
-		TokenType::NUM, TokenType::MULT, TokenType::NUM, TokenType::_EOF};
+		TT::num, TT::plus, TT::num, TT::minus,
+		TT::num, TT::mult, TT::num, TT::eof_};
 
 	Lexer lexer = {name, test};
 
