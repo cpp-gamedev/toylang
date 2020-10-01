@@ -59,7 +59,7 @@ const static std::unordered_map<std::string_view, TokenType> keywords = {
 	// clang-format on
 };
 
-struct Location {
+struct TokenLocation {
 	std::size_t start = 0;
 	std::size_t length = 0;
 	std::size_t line = 0;
@@ -73,7 +73,7 @@ struct Location {
 struct Token {
 	TT type = TT::error;
 
-	Location location = {};
+	TokenLocation location = {};
 
 	std::string_view raw(const std::string& source) const {
 		return location.view(source);
@@ -86,12 +86,15 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
 
 class Lexer {
   private:
+	struct {
+		std::size_t current = 0;
+		std::size_t start = 0;
+		std::size_t line = 1;
+		std::uint32_t column = 0;
+	} pos;
+
 	std::string_view fileName;
 	std::string source;
-	std::size_t currentPos = 0;
-	std::size_t startPos = 0;
-	std::size_t line = 1;
-	std::uint32_t column = 0;
 
   public:
 	Lexer(std::string_view& fileName, std::string& src)
@@ -100,10 +103,12 @@ class Lexer {
 
 	Token nextToken() {
 		skipWhiteSpace();
-		startPos = currentPos;
+		pos.start = pos.current;
 
-		if (eof())
+		if (eof()) {
 			return makeToken(TT::eof_);
+		}
+		
 		char c = advance();
 
 		// clang-format off
@@ -144,21 +149,21 @@ class Lexer {
 	}
 
 	char advance() {
-		if (currentPos >= source.length())
+		if (pos.current >= source.length())
 			return '\0';
-		return source[currentPos++];
+		return source[pos.current++];
 	}
 
 	char peek() const {
 		if (eof())
 			return '\0';
-		return source[currentPos];
+		return source[pos.current];
 	}
 
 	char peekNext() const {
-		if (eof() || currentPos + 1 >= source.length())
+		if (eof() || pos.current + 1 >= source.length())
 			return '\0';
-		return source[currentPos + 1];
+		return source[pos.current + 1];
 	}
 
 	bool checkChar(char ch) const {
@@ -174,7 +179,7 @@ class Lexer {
 	}
 
 	bool eof() const {
-		return currentPos >= source.length();
+		return pos.current >= source.length();
 	}
 
 	void skipWhiteSpace() {
@@ -184,7 +189,7 @@ class Lexer {
 			case '\r':
 			case '\t': advance(); break;
 			case '\n':
-				line++;
+				pos.line++;
 				advance();
 				break;
 			default: return;
@@ -193,7 +198,8 @@ class Lexer {
 	}
 
 	Token makeToken(TokenType type) const {
-		return Token{type, Location{startPos, currentPos, line, column}};
+		return Token{
+			type, TokenLocation{pos.start, pos.current, pos.line, pos.column}};
 	}
 };
 
