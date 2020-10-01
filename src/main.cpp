@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <iostream>
 #include <stdint.h>
+#include <str_enum.hpp>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -13,22 +14,21 @@
 
 using tl_Number = double;
 
-enum class TokenType {
-	plus,	// +
-	minus,	// -
-	mult,	// *
-	div,	// /
-	mod,	// %
-	num,	// [0-9]+(.[0-9]+)?
-	string, // '[^']' | "[^"]"
-	true_,	// true
-	false_, // false
-	let,	// let
-	nil,	// nil
-	eof_,	// '/0'
-	error,	// unknown
-	eCOUNT_
-};
+STR_ENUM(TokenType,
+		 plus,	 // +
+		 minus,	 // -
+		 mult,	 // *
+		 div,	 // /
+		 mod,	 // %
+		 num,	 // [0-9]+(.[0-9]+)?
+		 string, // '[^']' | "[^"]"
+		 true_,	 // true
+		 false_, // false
+		 let,	 // let
+		 nil,	 // nil
+		 eof_,	 // '/0'
+		 error,	 // unknown
+		 eCOUNT_);
 
 using TT = TokenType;
 
@@ -97,8 +97,7 @@ class Lexer {
 	std::string source;
 
   public:
-	Lexer(std::string_view& fileName, std::string& src)
-		: fileName(fileName), source(src) {
+	Lexer(std::string_view& fileName, std::string& src) : fileName(fileName), source(src) {
 	}
 
 	Token nextToken() {
@@ -108,7 +107,7 @@ class Lexer {
 		if (eof()) {
 			return makeToken(TT::eof_);
 		}
-		
+
 		char c = advance();
 
 		// clang-format off
@@ -198,8 +197,7 @@ class Lexer {
 	}
 
 	Token makeToken(TokenType type) const {
-		return Token{
-			type, TokenLocation{pos.start, pos.current, pos.line, pos.column}};
+		return Token{type, TokenLocation{pos.start, pos.current, pos.line, pos.column}};
 	}
 };
 
@@ -210,8 +208,7 @@ void lexerTest() {
 
 	const int expectedCount = 8;
 
-	TokenType expected[expectedCount] = {TT::num, TT::plus, TT::num, TT::minus,
-										 TT::num, TT::mult, TT::num, TT::eof_};
+	TokenType expected[expectedCount] = {TT::num, TT::plus, TT::num, TT::minus, TT::num, TT::mult, TT::num, TT::eof_};
 
 	for (int i = 0; i < expectedCount; i++) {
 		Token token = lexer.nextToken();
@@ -222,6 +219,8 @@ void lexerTest() {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char const* argv[]) {
 	std::cout << "--Toylang--\n" << std::endl;
+	assert(utils::toStr(TokenType::div) == "div");
+	assert(utils::toEnum("plus", TokenType::error) == TokenType::plus);
 	lexerTest();
 	return 0;
 }
