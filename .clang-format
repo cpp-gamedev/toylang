@@ -6,9 +6,7 @@ UseTab: Always
 ---
 Language: Cpp
 PointerAlignment: Left
-AlignConsecutiveAssignments: true
 AlignConsecutiveMacros: true
-AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: Right
 AlignOperands: true
 AlignTrailingComments: true

@@ -50,7 +50,7 @@ static constexpr std::array<std::string_view, (std::size_t)TT::eCOUNT_> tokenNam
 };
 // clang-format on
 
-const static std::unordered_map<std::string, TokenType> keywords = {
+const static std::unordered_map<std::string_view, TokenType> keywords = {
 	// clang-format off
 	{"nil"  , TT::nil   },
 	{"let"  , TT::let   },
@@ -60,21 +60,22 @@ const static std::unordered_map<std::string, TokenType> keywords = {
 };
 
 struct Location {
-	std::size_t	  start	 = 0;
-	std::size_t	  length = 0;
-	std::size_t	  line	 = 0;
+	std::size_t start = 0;
+	std::size_t length = 0;
+	std::size_t line = 0;
 	std::uint32_t column = 0;
 
-	std::string_view view(std::string& source) {
+	std::string_view view(const std::string& source) const {
 		return std::string_view(source.c_str() + start, length);
 	}
 };
 
 struct Token {
-	TokenType type	   = TT::error;
-	Location  location = {};
+	TT type = TT::error;
 
-	std::string_view raw(std::string& source) {
+	Location location = {};
+
+	std::string_view raw(const std::string& source) const {
 		return location.view(source);
 	}
 };
@@ -85,17 +86,16 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
 
 class Lexer {
   private:
-	std::string	  fileName;
-	std::string	  source;
-	std::size_t	  currentPos = 0;
-	std::size_t	  startPos	 = 0;
-	std::size_t	  line		 = 1;
-	std::uint32_t column	 = 0;
+	std::string_view fileName;
+	std::string source;
+	std::size_t currentPos = 0;
+	std::size_t startPos = 0;
+	std::size_t line = 1;
+	std::uint32_t column = 0;
 
   public:
-	Lexer(std::string& fileName, std::string& src) {
-		fileName = fileName;
-		source	 = src;
+	Lexer(std::string_view& fileName, std::string& src)
+		: fileName(fileName), source(src) {
 	}
 
 	Token nextToken() {
@@ -139,9 +139,8 @@ class Lexer {
 	// helper functions:
 
 	// somewhat expensive, optimize later.
-	bool isKeyword(Token& token) {
-		auto raw = std::string(token.raw(source));
-		return (keywords.find(raw) != keywords.end());
+	bool isKeyword(Token& token) const {
+		return (keywords.find(token.raw(source)) != keywords.end());
 	}
 
 	char advance() {
@@ -150,19 +149,19 @@ class Lexer {
 		return source[currentPos++];
 	}
 
-	char peek() {
+	char peek() const {
 		if (eof())
 			return '\0';
 		return source[currentPos];
 	}
 
-	char peekNext() {
+	char peekNext() const {
 		if (eof() || currentPos + 1 >= source.length())
 			return '\0';
 		return source[currentPos + 1];
 	}
 
-	bool checkChar(char ch) {
+	bool checkChar(char ch) const {
 		return peek() == ch;
 	}
 
@@ -174,7 +173,7 @@ class Lexer {
 		return false;
 	}
 
-	bool eof() {
+	bool eof() const {
 		return currentPos >= source.length();
 	}
 
@@ -193,22 +192,20 @@ class Lexer {
 		}
 	}
 
-	Token makeToken(TokenType type) {
+	Token makeToken(TokenType type) const {
 		return Token{type, Location{startPos, currentPos, line, column}};
 	}
 };
 
-void LexerTest() {
-	std::string test = "11 + 2 - 3.5 * 4.6";
-	std::string name = "<test_script>";
+void lexerTest() {
+	std::string test = "11 + 2 - 3.5 * 4.62";
+	std::string_view name = "<test_script>";
+	Lexer lexer = {name, test};
 
 	const int expectedCount = 8;
 
-	TokenType expected[expectedCount] = {
-		TT::num, TT::plus, TT::num, TT::minus,
-		TT::num, TT::mult, TT::num, TT::eof_};
-
-	Lexer lexer = {name, test};
+	TokenType expected[expectedCount] = {TT::num, TT::plus, TT::num, TT::minus,
+										 TT::num, TT::mult, TT::num, TT::eof_};
 
 	for (int i = 0; i < expectedCount; i++) {
 		Token token = lexer.nextToken();
@@ -219,6 +216,6 @@ void LexerTest() {
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char const* argv[]) {
 	std::cout << "--Toylang--\n" << std::endl;
-	LexerTest();
+	lexerTest();
 	return 0;
 }
