@@ -32,24 +32,6 @@ STR_ENUM(TokenType,
 
 using TT = TokenType;
 
-// clang-format off
-static constexpr std::array<std::string_view, (std::size_t)TT::eCOUNT_> tokenNames = {
-	"PLUS",	
-	"MINUS",	
-	"MULT",	
-	"DIV",	
-	"MOD",	
-	"NUM",	
-	"STRING", 
-	"TRUE",	
-	"FALSE",	
-	"LET",	
-	"NIL",
-	"END_OF_FILE",	
-	"<ERROR>"
-};
-// clang-format on
-
 const static std::unordered_map<std::string_view, TokenType> keywords = {
 	// clang-format off
 	{"nil"  , TT::nil   },
@@ -81,7 +63,7 @@ struct Token {
 };
 
 std::ostream& operator<<(std::ostream& os, const Token& token) {
-	return os << tokenNames[(std::size_t)(token.type)];
+	return os << utils::toStr(token.type);
 }
 
 class Lexer {
@@ -212,7 +194,7 @@ void lexerTest() {
 
 	for (int i = 0; i < expectedCount; i++) {
 		Token token = lexer.nextToken();
-		std::cout << "TOKEN_" << token << std::endl;
+		std::cout << token << std::endl;
 		assert(token.type == expected[i]);
 	}
 }
