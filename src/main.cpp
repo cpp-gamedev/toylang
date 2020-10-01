@@ -131,7 +131,7 @@ class Lexer {
 			advance();
 		}
 
-		if (peek() == '.' && isdigit(peekNext())) {
+		if (peek() == '.' && isdigit(peekAhead())) {
 			advance(); // consume the '.'
 			while (isdigit(peek())) {
 				advance();
@@ -144,7 +144,7 @@ class Lexer {
 	// helper functions:
 
 	// somewhat expensive, optimize later.
-	bool isKeyword(Token& token) const {
+	bool isKeyword(const Token& token) const {
 		return (keywords.find(token.raw(source)) != keywords.end());
 	}
 
@@ -160,7 +160,7 @@ class Lexer {
 		return source[pos.current];
 	}
 
-	char peekNext() const {
+	char peekAhead() const {
 		if (eof() || pos.current + 1 >= source.length())
 			return '\0';
 		return source[pos.current + 1];
@@ -189,7 +189,7 @@ class Lexer {
 			case '\r':
 			case '\t': advance(); break;
 			case '\n':
-				pos.line++;
+				++pos.line;
 				advance();
 				break;
 			default: return;
