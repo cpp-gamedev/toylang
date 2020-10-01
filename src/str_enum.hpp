@@ -43,7 +43,7 @@ helper<Enum>::helper(std::string_view str) {
 template <typename Enum>
 struct EnumHasher {
 	std::size_t operator()(Enum e) const {
-		return std::hash<std::uint64_t>()(static_cast<std::uint64_t>(e));
+		return std::hash<std::int64_t>()(static_cast<std::int64_t>(e));
 	}
 };
 
