@@ -10,7 +10,7 @@
 
 #define DEBUG_MODE		   /* empty */
 
-typedef double tl_Number;
+using tl_Number = double;
 
 enum TokenType {
 	PLUS,	// +
@@ -85,7 +85,7 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
 
 class Lexer {
   private:
-	std::string	  fileName;
+	std::string fileName;
 	std::string	  source;
 	std::size_t	  currentPos = 0;
 	std::size_t	  startPos	 = 0;
