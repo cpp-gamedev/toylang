@@ -5,5 +5,4 @@ out/*
 .clangd/*
 
 CMakeSettings.json
-.editorconfig
 compile_commands.json

@@ -1,7 +1,8 @@
 #pragma once
-#include <utils/str_enum.hpp>
 #include <string>
 #include <string_view>
+#include <utils/str_enum.hpp>
+
 
 namespace tl {
 using number_t = double;
