@@ -2,6 +2,7 @@
 **/.vscode/*
 build/*
 out/*
+.clangd/*
 
 CMakeSettings.json
 .editorconfig
