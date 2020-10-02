@@ -1,8 +1,8 @@
 #include "token.hpp"
 #include <cassert>
-#include <cstring>
 #include <iostream>
 #include <lexer.hpp>
+#include <utils/str_format.hpp>
 
 void lexerTest() {
 	std::string test = "11 + 2 - 3.5 * 4.62";
