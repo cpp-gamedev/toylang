@@ -1,4 +1,5 @@
-#include <string_view>
+#ifndef TL_TOKEN
+#define TL_TOKEN
 #include <token.hpp>
 
 namespace tl {
@@ -16,3 +17,4 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
 }
 
 } // namespace tl
+#endif

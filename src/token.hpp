@@ -1,5 +1,8 @@
+#pragma once
 #include <utils/str_enum.hpp>
 #include <utils/str_format.hpp>
+#include <string>
+#include <string_view>
 
 namespace tl {
 using number_t = double;
@@ -20,8 +23,6 @@ STR_ENUM(TokenType,
 		 error,	 // unknown
 		 eCOUNT_);
 
-using TT = TokenType;
-
 struct TokenLocation {
 	std::size_t start = 0;
 	std::size_t length = 0;
@@ -32,7 +33,7 @@ struct TokenLocation {
 };
 
 struct Token {
-	TT type = TT::error;
+	TokenType type = TokenType::error;
 	TokenLocation location = {};
 
 	std::string_view raw(const std::string& source) const;
