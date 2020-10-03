@@ -16,3 +16,14 @@ BreakBeforeBraces: Attach
 AllowShortCaseLabelsOnASingleLine: true
 AlwaysBreakTemplateDeclarations: Yes
 ColumnLimit: 140
+IncludeCategories:
+  # Headers in <> without extension.
+  - Regex:           '<([A-Za-z0-9\/-_])+>'
+    Priority:        1
+  # Headers in <> with .h extension.
+  - Regex:           '<([A-Za-z0-9\/-_])+\.h>'
+    Priority:        10
+  # Headers in <> with .hpp extension.
+  - Regex:           '<([A-Za-z0-9\/-_])+\.hpp>'
+    Priority:        20
+...

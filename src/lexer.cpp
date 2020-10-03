@@ -1,6 +1,6 @@
 #include <cctype>
-#include <lexer.hpp>
 #include <unordered_map>
+#include <lexer.hpp>
 
 namespace tl {
 
@@ -17,7 +17,7 @@ const std::unordered_map<std::string_view, TokenType> Lexer::keywords = {
 
 Token Lexer::nextToken() {
 	skipWhiteSpace();
-	pos.start = pos.current;
+	pos.location.start = pos.current;
 
 	if (eof()) {
 		return makeToken(TT::eof_);
@@ -32,7 +32,7 @@ Token Lexer::nextToken() {
 			case '*': return makeToken(TT::mult );
 			case '/': return makeToken(TT::div  );
 			case '%': return makeToken(TT::mod  );
-			default:  
+			default:
 			if (isdigit(c)) return number();
 		}
 	// clang-format on
@@ -99,7 +99,7 @@ void Lexer::skipWhiteSpace() {
 		case '\r':
 		case '\t': advance(); break;
 		case '\n':
-			++pos.line;
+			++pos.location.line;
 			advance();
 			break;
 		default: return;
@@ -108,7 +108,7 @@ void Lexer::skipWhiteSpace() {
 }
 
 Token Lexer::makeToken(TT type) const {
-	return Token{type, TokenLocation{pos.start, pos.current, pos.line, pos.column}};
+	return Token{type, TokenLocation{pos.location, pos.current}};
 }
 
 } // namespace tl

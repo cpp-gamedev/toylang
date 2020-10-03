@@ -1,0 +1,6 @@
+[submodule "ext/kt/str_format"]
+	path = ext/kt/str_format
+	url = https://github.com/karnkaul/str-format
+[submodule "ext/kt/str_enum"]
+	path = ext/kt/str_enum
+	url = https://github.com/karnkaul/str-enum
