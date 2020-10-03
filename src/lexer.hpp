@@ -1,4 +1,5 @@
 #pragma once
+#include <std_types.hpp>
 #include <token.hpp>
 
 namespace tl {
@@ -6,10 +7,8 @@ namespace tl {
 class Lexer {
   private:
 	struct SourcePosition {
+		Location location;
 		std::size_t current = 0;
-		std::size_t start = 0;
-		std::size_t line = 1;
-		std::uint32_t column = 0;
 	} pos;
 
 	std::string_view fileName;

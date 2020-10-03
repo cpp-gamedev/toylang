@@ -1,7 +1,16 @@
 #pragma once
+#include <iostream>
 #include <optional>
+#include <str_format/str_format.hpp>
 
-namespace tl::utils {
+namespace tl {
+///
+/// \brief fmt-like printf (only {} substitution, no float formatting etc)
+///
+template <typename... Args>
+void print(std::string_view fmt, Args&&... args);
+
+namespace utils {
 ///
 /// \brief Obtain the value corresponding to key in map (if present)
 /// \param map associative container of K keys and V values
@@ -34,4 +43,10 @@ V const& valueOr(C<K, V, Args...> const& map, K const& key, V const& fallback) {
 	}
 	return fallback;
 }
-} // namespace tl::utils
+} // namespace utils
+
+template <typename... Args>
+void print(std::string_view fmt, Args&&... args) {
+	std::cout << kt::format_str(fmt, std::forward<Args>(args)...);
+}
+} // namespace tl
